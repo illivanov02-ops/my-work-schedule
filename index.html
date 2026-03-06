@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>График смен онлайн — Рассчитать календарь работы 2/2, 3/3, 5/2</title>
-    <meta name="description" content="Бесплатный сервис для расчета графика смен онлайн. Удобный планировщик работы 2/2, 3/3 на 2026 год. Распечатайте свой график в один клик.">
+    <meta name="description" content="Бесплатный сервис для расчета графика смен онлайн. Удобный планировщик работы 2/2, 3/3.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
             --secondary: #10b981;
             --danger: #ef4444;
             --bg: #f8fafc;
@@ -22,61 +21,88 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 8px; color: var(--text); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: var(--text); overflow-x: hidden; } /* Запрет скролла по горизонтали */
         
-        .site-header { max-width: 1000px; margin: 10px auto; display: flex; align-items: center; gap: 10px; padding: 0 5px; }
+        .site-header { max-width: 1000px; margin: 10px auto; display: flex; align-items: center; gap: 8px; padding: 0 5px; }
         .logo-icon { font-size: 24px; }
         .logo-text { font-size: 20px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        #calendar-container { max-width: 1000px; margin: 0 auto 20px auto; background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        #calendar-container { max-width: 1000px; margin: 0 auto 20px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
         .schedule-maker { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: flex-end; }
         .input-group { display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        .input-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
+        .input-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border 0.2s; width: 100%; }
+        .input-group input:focus { border-color: var(--primary); }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        h2 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+        h2 { margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a; }
 
-        button { padding: 12px 16px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; }
+        button { padding: 12px 18px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; transition: background 0.2s; white-space: nowrap; }
+        button:active { transform: scale(0.98); }
         .btn-danger { background: var(--danger); }
         .btn-print { background: #64748b; }
 
-        .stats-panel { background: #eff6ff; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; font-size: 12px; font-weight: 600; color: var(--primary); border: 1px solid #dbeafe; }
+        .stats-panel { background: #eff6ff; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; font-size: 12px; font-weight: 700; color: var(--primary); border: 1px solid #dbeafe; }
 
+        /* Календарная сетка */
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
         .weekdays div { font-weight: 700; text-align: center; color: #94a3b8; font-size: 10px; text-transform: uppercase; }
 
-        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .day { min-height: 80px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: #fff; cursor: pointer; position: relative; display: flex; flex-direction: column; }
+        /* ИСПРАВЛЕНИЕ: Гарантированная ширина сетки */
+        .days { display: grid; grid-template-columns: repeat(7, calc((100% - 24px) / 7)); gap: 4px; width: 100%; }
+        
+        .day { min-height: 80px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: #fff; cursor: pointer; position: relative; display: flex; flex-direction: column; transition: border 0.2s; overflow: hidden; }
+        .day:hover { border-color: var(--primary); }
         .day-number { font-weight: 800; font-size: 11px; color: #94a3b8; text-align: right; margin-bottom: 2px; }
         .today { border: 2px solid var(--primary); background: #f0f7ff; }
+        .today .day-number { color: var(--primary); }
 
-        .event { color: white; padding: 3px 5px; border-radius: 4px; font-size: 10px; margin-top: 2px; font-weight: 700; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: opacity 0.2s; }
-        .event:active { opacity: 0.6; } /* Визуальный отклик на нажатие */
+        /* ИСПРАВЛЕНИЕ: Свойства для обрезки длинного текста */
+        .event { 
+            color: white; 
+            padding: 3px 5px; 
+            border-radius: 4px; 
+            font-size: 10px; 
+            margin-top: 2px; 
+            font-weight: 700; 
+            text-align: center; 
+            
+            /* Магия обрезки текста */
+            overflow: hidden; 
+            white-space: nowrap; 
+            text-overflow: ellipsis; 
+            width: 100%; 
+            display: block;
+        }
+        .event:active { opacity: 0.7; }
         .event-shift { background: var(--primary); }
         .event-meeting { background: var(--secondary); }
 
-        /* SEO блок */
-        .seo-section { max-width: 1000px; margin: 30px auto; padding: 20px; color: #475569; line-height: 1.6; font-size: 14px; }
-        .seo-section h1, .seo-section h2 { color: #0f172a; }
-
+        /* Мобильная адаптация */
         @media (max-width: 600px) {
-            .day { min-height: 65px; }
-            .event { font-size: 8px; padding: 2px; }
-            .schedule-maker { grid-template-columns: 1fr 1fr; }
-            .btn-group { grid-column: span 2; display: flex; gap: 5px; }
-            .btn-group button { flex: 1; padding: 12px 5px; font-size: 12px; }
+            body { padding: 5px; }
+            #calendar-container { padding: 12px; border-radius: 12px; }
+            .day { min-height: 60px; padding: 2px; border-radius: 6px; }
+            .day-number { font-size: 10px; margin-bottom: 1px; }
+            .event { font-size: 8px; padding: 2px 3px; letter-spacing: -0.3px; }
+            .schedule-maker { padding: 10px; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .input-group { font-size: 10px; }
+            .input-group input { padding: 8px; font-size: 12px; }
+            .btn-group { grid-column: span 2; display: flex; gap: 4px; margin-top: 5px; }
+            .btn-group button { flex: 1; padding: 10px 5px; font-size: 11px; }
         }
+
+        /* Модалка */
+        #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; backdrop-filter: blur(4px); padding: 10px; }
+        .modal-content { background: white; width: 100%; max-width: 340px; margin: 15vh auto; padding: 25px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
 
         @media print {
             .site-header, .schedule-maker, .header button, .btn-print, .btn-danger, #modal, .seo-section { display: none !important; }
-            #calendar-container { box-shadow: none; padding: 0; }
+            body { background: white; padding: 0; }
+            #calendar-container { box-shadow: none; border: none; width: 100%; margin: 0; }
             .day { border: 1px solid #000; min-height: 80px; }
         }
-
-        #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 90%; max-width: 340px; margin: 15vh auto; padding: 25px; border-radius: 16px; }
-        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -89,7 +115,7 @@
 <div id="calendar-container">
     <div class="schedule-maker">
         <div class="input-group">
-            <label>Первая смена</label>
+            <label>Начало цикла</label>
             <input type="date" id="sched-start">
         </div>
         <div class="input-group">
@@ -107,7 +133,7 @@
         <div class="btn-group">
             <button onclick="generateSchedule()">Заполнить год</button>
             <button class="btn-print" onclick="window.print()">Печать</button>
-            <button class="btn-danger" onclick="clearAll()">Очистить</button>
+            <button class="btn-danger" onclick="clearAll()">×</button>
         </div>
     </div>
 
@@ -125,26 +151,14 @@
     <div class="days" id="days"></div>
 </div>
 
-<article class="seo-section">
-    <h1>Рассчитать график смен 2/2, 3/3 и 5/2 онлайн</h1>
-    <p>Добро пожаловать на <strong>grafik-smen.online</strong> — самый простой и быстрый способ составить свое рабочее расписание. Наш сервис идеально подходит для сотрудников складов, охраны, медицинских работников и всех, кто работает по циклическому графику.</p>
-    <h2>Преимущества нашего календаря:</h2>
-    <ul>
-        <li><strong>Автозаполнение:</strong> Введите дату первой смены, и система рассчитает ваш график на 365 дней вперед.</li>
-        <li><strong>Личные встречи:</strong> Кликните на любой день, чтобы добавить заметку или запись к врачу поверх рабочих смен.</li>
-        <li><strong>Удобно с телефона:</strong> Сайт полностью адаптирован для мобильных устройств.</li>
-        <li><strong>Печать и PDF:</strong> Сохраните готовый результат или распечатайте его для коллег и семьи.</li>
-    </ul>
-</article>
-
 <div id="modal">
     <div class="modal-content">
-        <h3 style="margin:0">Добавить запись</h3>
+        <h3 style="margin: 0 0 10px 0;">Добавить встречу</h3>
         <input type="text" id="event-title" placeholder="Название (напр. Врач)">
         <input type="time" id="event-time" value="09:00">
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn-danger" onclick="closeModal()" style="flex:1">Отмена</button>
-            <button onclick="saveEvent()" style="flex:1">ОК</button>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn-danger" onclick="closeModal()" style="flex: 1;">Отмена</button>
+            <button onclick="saveEvent()" style="flex: 1.5;">Сохранить</button>
         </div>
     </div>
 </div>
@@ -162,50 +176,55 @@
 
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
+
+        const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        let firstDay = new Date(year, month, 1).getDay();
         let startDay = firstDay === 0 ? 6 : firstDay - 1;
 
         const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
         monthYear.innerText = `${monthNames[month]} ${year}`;
 
-        let shifts = 0, meetings = 0;
+        let shiftsCount = 0;
+        let meetingsCount = 0;
         const realToday = new Date().toISOString().split('T')[0];
 
-        for (let i = 0; i < startDay; i++) daysContainer.appendChild(document.createElement("div"));
+        for (let i = 0; i < startDay; i++) {
+            daysContainer.appendChild(document.createElement("div"));
+        }
 
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement("div");
-            dayDiv.className = "day";
-            const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            dayDiv.classList.add("day");
             
+            const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             if (dateKey === realToday) dayDiv.classList.add("today");
+            
             dayDiv.innerHTML = `<div class="day-number">${i}</div>`;
             
             if (events[dateKey]) {
-                events[dateKey].forEach((ev, idx) => {
-                    const evDiv = document.createElement("div");
-                    evDiv.className = `event ${ev.isShift ? 'event-shift' : 'event-meeting'}`;
-                    evDiv.innerText = ev.title;
-                    ev.isShift ? shifts++ : meetings++;
+                events[dateKey].forEach((event, index) => {
+                    const eventDiv = document.createElement("div");
+                    eventDiv.classList.add("event", event.isShift ? "event-shift" : "event-meeting");
+                    eventDiv.innerText = event.title;
+                    event.isShift ? shiftsCount++ : meetingsCount++;
                     
-                    // УДАЛЕНИЕ КЛИКОМ (ДЛЯ ТЕЛЕФОНА)
-                    evDiv.onclick = (e) => {
+                    // Удаление кликом (для мобильных)
+                    eventDiv.onclick = (e) => {
                         e.stopPropagation();
-                        if(confirm(`Удалить "${ev.title}"?`)) {
-                            events[dateKey].splice(idx, 1);
+                        if(confirm(`Удалить "${event.title}"?`)) {
+                            events[dateKey].splice(index, 1);
                             if(!events[dateKey].length) delete events[dateKey];
                             save(); renderCalendar();
                         }
                     };
-                    dayDiv.appendChild(evDiv);
+                    dayDiv.appendChild(eventDiv);
                 });
             }
 
             dayDiv.onclick = () => openModal(dateKey);
             daysContainer.appendChild(dayDiv);
         }
-        statsPanel.innerHTML = `<span>Смен: ${shifts}</span> <span>Встреч: ${meetings}</span>`;
+        statsPanel.innerHTML = `<span>📅 Смен: ${shiftsCount}</span> <span>📝 Встреч: ${meetingsCount}</span>`;
     }
 
     function save() { localStorage.setItem("myWebCalendar", JSON.stringify(events)); }
@@ -216,7 +235,8 @@
         const work = parseInt(document.getElementById("sched-work").value);
         const rest = parseInt(document.getElementById("sched-rest").value);
         const title = document.getElementById("sched-title").value;
-        if (!start) return alert("Выберите дату!");
+
+        if (!start || isNaN(work)) return alert("Укажите дату начала цикла");
 
         let d = new Date(start);
         for (let i = 0; i < 365; i++) {
@@ -230,17 +250,17 @@
         save(); renderCalendar();
     }
 
-    function clearAll() { if(confirm("Очистить всё?")) { events = {}; save(); renderCalendar(); } }
+    function clearAll() { if(confirm("Очистить календарь?")) { events = {}; save(); renderCalendar(); } }
     function openModal(date) { selectedDateStr = date; document.getElementById("modal").style.display = "block"; }
     function closeModal() { document.getElementById("modal").style.display = "none"; }
     function saveEvent() {
-        const t = document.getElementById("event-title").value;
-        if (t) {
-            if (!events[selectedDateStr]) events[selectedDateStr] = [];
-            events[selectedDateStr].push({ title: t, isShift: false });
-            save(); closeModal(); renderCalendar();
-        }
+        const title = document.getElementById("event-title").value;
+        if (!title) return;
+        if (!events[selectedDateStr]) events[selectedDateStr] = [];
+        events[selectedDateStr].push({ title: title, isShift: false });
+        save(); closeModal(); renderCalendar();
     }
+
     renderCalendar();
 </script>
 </body>
