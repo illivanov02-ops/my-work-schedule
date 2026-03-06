@@ -6,8 +6,9 @@
     
     <title>График смен онлайн — Удобный планировщик 2/2, 3/3, 5/2</title>
     <meta name="description" content="Бесплатный сервис для создания рабочего графика. Рассчитайте смены 2/2, 3/3 на год вперед. Удобно, быстро и без регистрации.">
-    <meta name="keywords" content="график смен, календарь работы, расчет смен, планировщик 2/2, составить расписание">
     
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -21,13 +22,24 @@
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: var(--text); }
-        #calendar-container { max-width: 1000px; margin: 20px auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        
+        /* НОВОЕ: Стильная шапка сайта */
+        .site-header { 
+            max-width: 1000px; 
+            margin: 10px auto; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            padding: 10px;
+        }
+        .logo-icon { font-size: 32px; }
+        .logo-text { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        /* Панель управления */
+        #calendar-container { max-width: 1000px; margin: 0 auto 40px auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+
         .schedule-maker { background: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: flex-end; }
         .input-group { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
         .input-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h2 { margin: 0; font-size: 1.5rem; color: #0f172a; }
@@ -43,7 +55,7 @@
         .weekdays div { font-weight: 700; text-align: center; color: #64748b; font-size: 12px; text-transform: uppercase; }
 
         .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .day { min-height: 100px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; background: #fff; cursor: pointer; transition: border 0.2s; }
+        .day { min-height: 100px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; background: #fff; cursor: pointer; transition: border 0.2s; position: relative; }
         .day:hover { border-color: var(--primary); background: #fdfdfd; }
         .day-number { font-weight: 700; font-size: 14px; color: #94a3b8; text-align: right; }
         .today { border: 2px solid var(--primary); background: #eff6ff !important; }
@@ -53,23 +65,17 @@
         .event-meeting { background: var(--secondary); }
         .event-shift { background: var(--primary); }
 
-        /* Модалка */
         #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: white; width: 90%; max-width: 350px; margin: 15vh auto; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
 
-        /* Адаптивность для мобилок */
         @media (max-width: 600px) {
             .day { min-height: 70px; padding: 4px; }
-            .day-number { font-size: 12px; }
-            .event { font-size: 9px; padding: 2px; }
-            .stats-panel { flex-direction: column; gap: 5px; }
-            h2 { font-size: 1.1rem; }
+            .logo-text { font-size: 20px; }
         }
 
-        /* Стиль для печати */
         @media print {
-            .schedule-maker, .header button, .btn-danger, .btn-print, #modal { display: none !important; }
+            .site-header, .schedule-maker, .header button, .btn-danger, .btn-print, #modal, .seo-text { display: none !important; }
             body { background: white; padding: 0; }
             #calendar-container { box-shadow: none; border: none; width: 100%; margin: 0; }
             .day { min-height: 80px; border: 1px solid #000; }
@@ -77,6 +83,11 @@
     </style>
 </head>
 <body>
+
+<header class="site-header">
+    <div class="logo-icon">📅</div>
+    <div class="logo-text">График Смен Онлайн</div>
+</header>
 
 <div id="calendar-container">
     <div class="schedule-maker">
@@ -98,7 +109,7 @@
         </div>
         <div style="display: flex; gap: 8px;">
             <button onclick="generateSchedule()">Заполнить</button>
-            <button class="btn-print" onclick="window.print()">Печать/PDF</button>
+            <button class="btn-print" onclick="window.print()">Печать</button>
             <button class="btn-danger" onclick="clearAll()">×</button>
         </div>
     </div>
@@ -115,6 +126,15 @@
         <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
     </div>
     <div class="days" id="days"></div>
+</div>
+
+<div class="seo-text" style="max-width: 1000px; margin: 40px auto; padding: 20px; color: #64748b; line-height: 1.6; font-size: 14px; border-top: 1px solid #e2e8f0;">
+    <h2>О сервисе grafik-smen.online</h2>
+    <p>Наш онлайн-календарь поможет вам быстро составить расписание работы 2/2, 3/3, 5/2 или по любому индивидуальному циклу на год вперед. Это бесплатный инструмент для сотрудников со сменным графиком.</p>
+    <ul>
+        <li><strong>Конфиденциальность:</strong> Все данные хранятся только в вашем браузере.</li>
+        <li><strong>Удобство:</strong> Добавляйте важные встречи и распечатывайте результат.</li>
+    </ul>
 </div>
 
 <div id="modal">
@@ -228,15 +248,5 @@
 
     renderCalendar();
 </script>
-<div style="max-width: 1000px; margin: 40px auto; padding: 20px; color: #64748b; line-height: 1.6; font-size: 14px; border-top: 1px solid #e2e8f0;">
-    <h2>О сервисе «Мой График Смен»</h2>
-    <p>Наш онлайн-календарь поможет вам быстро составить расписание работы 2/2, 3/3, 5/2 или по любому индивидуальному циклу на год вперед. Это бесплатный инструмент для сотрудников со сменным графиком.</p>
-    <ul>
-        <li><strong>Конфиденциальность:</strong> Все данные хранятся только в вашем браузере, мы не собираем личную информацию.</li>
-        <li><strong>Удобство:</strong> Вы можете добавить важные встречи поверх рабочего графика и распечатать результат в PDF.</li>
-        <li><strong>Простота:</strong> Просто выберите дату первой смены и нажмите «Заполнить».</li>
-    </ul>
-</div>
 </body>
 </html>
-      
