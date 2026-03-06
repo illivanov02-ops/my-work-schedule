@@ -2,14 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>График смен онлайн — Удобный планировщик 2/2, 3/3, 5/2</title>
-    <meta name="description" content="Бесплатный сервис для создания рабочего графика. Рассчитайте смены 2/2, 3/3 на год вперед. Удобно, быстро и без регистрации.">
+    <meta name="description" content="Бесплатный сервис для расчета рабочих смен. Удобный календарь онлайн.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -19,66 +18,73 @@
             --danger: #ef4444;
             --bg: #f8fafc;
             --text: #1e293b;
+            --border: #e2e8f0;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: var(--text); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: var(--text); line-height: 1.5; }
         
-        /* НОВОЕ: Стильная шапка сайта */
-        .site-header { 
-            max-width: 1000px; 
-            margin: 10px auto; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-            padding: 10px;
-        }
-        .logo-icon { font-size: 32px; }
-        .logo-text { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+        .site-header { max-width: 1000px; margin: 10px auto; display: flex; align-items: center; gap: 10px; padding: 0 10px; }
+        .logo-icon { font-size: 28px; }
+        .logo-text { font-size: 22px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        #calendar-container { max-width: 1000px; margin: 0 auto 40px auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        #calendar-container { max-width: 1000px; margin: 0 auto 30px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
-        .schedule-maker { background: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: flex-end; }
-        .input-group { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
-        .input-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
+        /* Панель управления */
+        .schedule-maker { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: flex-end; }
+        .input-group { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #64748b; }
+        .input-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: border 0.2s; }
+        .input-group input:focus { border-color: var(--primary); }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h2 { margin: 0; font-size: 1.5rem; color: #0f172a; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        h2 { margin: 0; font-size: 1.25rem; color: #0f172a; font-weight: 700; }
 
-        button { padding: 10px 18px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; font-size: 14px; }
-        button:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        button { padding: 10px 16px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; font-size: 14px; white-space: nowrap; }
+        button:active { transform: scale(0.98); }
         .btn-danger { background: var(--danger); }
         .btn-print { background: #64748b; }
 
-        .stats-panel { background: #eff6ff; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 20px; font-size: 14px; color: var(--primary); border: 1px solid #dbeafe; }
+        .stats-panel { background: #eff6ff; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; font-size: 13px; font-weight: 600; color: var(--primary); border: 1px solid #dbeafe; }
 
-        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px; }
-        .weekdays div { font-weight: 700; text-align: center; color: #64748b; font-size: 12px; text-transform: uppercase; }
+        /* Календарная сетка */
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+        .weekdays div { font-weight: 700; text-align: center; color: #94a3b8; font-size: 11px; text-transform: uppercase; }
 
-        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .day { min-height: 100px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; background: #fff; cursor: pointer; transition: border 0.2s; position: relative; }
-        .day:hover { border-color: var(--primary); background: #fdfdfd; }
-        .day-number { font-weight: 700; font-size: 14px; color: #94a3b8; text-align: right; }
-        .today { border: 2px solid var(--primary); background: #eff6ff !important; }
+        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .day { min-height: 85px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: #fff; cursor: pointer; display: flex; flex-direction: column; transition: background 0.2s; }
+        .day-number { font-weight: 700; font-size: 12px; color: #94a3b8; margin-bottom: 4px; text-align: right; }
+        .today { border: 2px solid var(--primary); background: #f0f7ff; }
         .today .day-number { color: var(--primary); }
 
-        .event { color: white; padding: 4px 6px; border-radius: 5px; font-size: 11px; margin-top: 4px; font-weight: 600; cursor: context-menu; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .event-meeting { background: var(--secondary); }
+        .event { color: white; padding: 2px 4px; border-radius: 4px; font-size: 10px; margin-top: 2px; font-weight: 700; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         .event-shift { background: var(--primary); }
+        .event-meeting { background: var(--secondary); }
 
-        #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 90%; max-width: 350px; margin: 15vh auto; padding: 30px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-
+        /* Мобильная адаптация */
         @media (max-width: 600px) {
-            .day { min-height: 70px; padding: 4px; }
-            .logo-text { font-size: 20px; }
+            body { padding: 5px; }
+            #calendar-container { padding: 12px; border-radius: 12px; }
+            .day { min-height: 60px; padding: 2px; border-radius: 6px; }
+            .day-number { font-size: 10px; margin-bottom: 2px; }
+            .event { font-size: 8px; padding: 1px 2px; letter-spacing: -0.2px; }
+            .logo-text { font-size: 18px; }
+            button { padding: 10px 12px; font-size: 12px; }
+            .schedule-maker { padding: 10px; grid-template-columns: 1fr 1fr; }
+            .input-group:last-of-type { grid-column: span 2; }
+            .btn-group { grid-column: span 2; display: flex; gap: 5px; }
+            .btn-group button { flex: 1; }
         }
+
+        /* Модальное окно */
+        #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 340px; margin: 10vh auto; padding: 25px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
 
         @media print {
             .site-header, .schedule-maker, .header button, .btn-danger, .btn-print, #modal, .seo-text { display: none !important; }
-            body { background: white; padding: 0; }
-            #calendar-container { box-shadow: none; border: none; width: 100%; margin: 0; }
-            .day { min-height: 80px; border: 1px solid #000; }
+            body { background: white; }
+            #calendar-container { box-shadow: none; border: none; width: 100%; }
+            .day { border: 1px solid #ccc; min-height: 70px; }
         }
     </style>
 </head>
@@ -86,7 +92,7 @@
 
 <header class="site-header">
     <div class="logo-icon">📅</div>
-    <div class="logo-text">График Смен Онлайн</div>
+    <div class="logo-text">График Смен</div>
 </header>
 
 <div id="calendar-container">
@@ -96,6 +102,10 @@
             <input type="date" id="sched-start">
         </div>
         <div class="input-group">
+            <label>Название</label>
+            <input type="text" id="sched-title" value="Смена">
+        </div>
+        <div class="input-group">
             <label>Работа</label>
             <input type="number" id="sched-work" value="2">
         </div>
@@ -103,14 +113,10 @@
             <label>Отдых</label>
             <input type="number" id="sched-rest" value="2">
         </div>
-        <div class="input-group">
-            <label>Название</label>
-            <input type="text" id="sched-title" value="Смена">
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button onclick="generateSchedule()">Заполнить</button>
-            <button class="btn-print" onclick="window.print()">Печать</button>
-            <button class="btn-danger" onclick="clearAll()">×</button>
+        <div class="btn-group" style="display: flex; gap: 8px; width: 100%;">
+            <button onclick="generateSchedule()" style="flex: 2;">Заполнить</button>
+            <button class="btn-print" onclick="window.print()" style="flex: 1;">Печать</button>
+            <button class="btn-danger" onclick="clearAll()" style="flex: 0.5;">×</button>
         </div>
     </div>
 
@@ -128,23 +134,18 @@
     <div class="days" id="days"></div>
 </div>
 
-<div class="seo-text" style="max-width: 1000px; margin: 40px auto; padding: 20px; color: #64748b; line-height: 1.6; font-size: 14px; border-top: 1px solid #e2e8f0;">
-    <h2>О сервисе grafik-smen.online</h2>
-    <p>Наш онлайн-календарь поможет вам быстро составить расписание работы 2/2, 3/3, 5/2 или по любому индивидуальному циклу на год вперед. Это бесплатный инструмент для сотрудников со сменным графиком.</p>
-    <ul>
-        <li><strong>Конфиденциальность:</strong> Все данные хранятся только в вашем браузере.</li>
-        <li><strong>Удобство:</strong> Добавляйте важные встречи и распечатывайте результат.</li>
-    </ul>
+<div class="seo-text" style="max-width: 1000px; margin: 20px auto; padding: 20px; color: #94a3b8; font-size: 12px; text-align: center;">
+    © 2026 grafik-smen.online — бесплатный расчет рабочих графиков
 </div>
 
 <div id="modal">
     <div class="modal-content">
-        <h3 style="margin: 0 0 15px 0;">Событие</h3>
-        <input type="text" id="event-title" placeholder="Название">
+        <h3 style="margin: 0 0 10px 0;">Новое событие</h3>
+        <input type="text" id="event-title" placeholder="Что сделать?">
         <input type="time" id="event-time" value="09:00">
-        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button class="btn-danger" onclick="closeModal()">Отмена</button>
-            <button onclick="saveEvent()">Сохранить</button>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn-danger" onclick="closeModal()" style="flex: 1;">Отмена</button>
+            <button onclick="saveEvent()" style="flex: 1.5;">Сохранить</button>
         </div>
     </div>
 </div>
@@ -181,32 +182,25 @@
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement("div");
             dayDiv.classList.add("day");
-            if (year === realToday.getFullYear() && month === realToday.getMonth() && i === realToday.getDate()) dayDiv.classList.add("today");
-            
             const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            
+            if (year === realToday.getFullYear() && month === realToday.getMonth() && i === realToday.getDate()) {
+                dayDiv.classList.add("today");
+            }
+            
             dayDiv.innerHTML = `<div class="day-number">${i}</div>`;
             
             if (events[dateKey]) {
                 events[dateKey].forEach((event, index) => {
                     const eventDiv = document.createElement("div");
                     eventDiv.classList.add("event", event.isShift ? "event-shift" : "event-meeting");
-                    eventDiv.innerText = event.isShift ? event.title : `${event.time} ${event.title}`;
-                    
+                    eventDiv.innerText = event.isShift ? event.title : event.title;
                     event.isShift ? shiftsCount++ : meetingsCount++;
-
-                    eventDiv.oncontextmenu = (e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        if(confirm(`Удалить "${event.title}"?`)) {
-                            events[dateKey].splice(index, 1);
-                            if(!events[dateKey].length) delete events[dateKey];
-                            save(); renderCalendar();
-                        }
-                    };
                     dayDiv.appendChild(eventDiv);
                 });
             }
 
-            dayDiv.onclick = (e) => { if(!e.target.classList.contains('event')) openModal(dateKey); };
+            dayDiv.onclick = () => openModal(dateKey);
             daysContainer.appendChild(dayDiv);
         }
         statsPanel.innerHTML = `<span>📅 Смен: ${shiftsCount}</span> <span>📝 Встреч: ${meetingsCount}</span>`;
@@ -221,7 +215,7 @@
         const rest = parseInt(document.getElementById("sched-rest").value);
         const title = document.getElementById("sched-title").value;
 
-        if (!start || isNaN(work)) return alert("Заполните настройки");
+        if (!start || isNaN(work)) return alert("Укажите дату начала");
 
         let d = new Date(start);
         for (let i = 0; i < 365; i++) {
@@ -235,7 +229,7 @@
         save(); renderCalendar();
     }
 
-    function clearAll() { if(confirm("Очистить календарь?")) { events = {}; save(); renderCalendar(); } }
+    function clearAll() { if(confirm("Очистить все данные?")) { events = {}; save(); renderCalendar(); } }
     function openModal(date) { selectedDateStr = date; document.getElementById("modal").style.display = "block"; }
     function closeModal() { document.getElementById("modal").style.display = "none"; }
     function saveEvent() {
