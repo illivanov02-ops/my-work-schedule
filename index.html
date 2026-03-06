@@ -22,7 +22,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: var(--text); overflow-x: hidden; }
         
-        .site-header { max-width: 1000px; margin: 10px auto; display: flex; align-items: center; gap: 8px; padding: 0 5px; }
+        .site-header { max-width: 1000px; margin: 5px auto 10px; display: flex; align-items: center; gap: 8px; padding: 0 5px; }
         .logo-icon { font-size: 24px; }
         .logo-text { font-size: 20px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
@@ -41,30 +41,38 @@
         .stats-panel { background: #eff6ff; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; font-size: 12px; font-weight: 700; color: var(--primary); border: 1px solid #dbeafe; }
 
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
-        .weekdays div { font-weight: 700; text-align: center; color: #94a3b8; font-size: 10px; text-transform: uppercase; }
+        .weekdays div { font-weight: 700; text-align: center; color: #94a3b8; font-size: 11px; text-transform: uppercase; }
 
-        .days { display: grid; grid-template-columns: repeat(7, calc((100% - 24px) / 7)); gap: 4px; width: 100%; }
-        .day { min-height: 80px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: #fff; cursor: pointer; display: flex; flex-direction: column; overflow: hidden; }
-        .day-number { font-weight: 800; font-size: 11px; color: #94a3b8; text-align: right; margin-bottom: 2px; }
+        .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; width: 100%; }
+        
+        /* УВЕЛИЧЕННАЯ ЯЧЕЙКА */
+        .day { min-height: 95px; border: 1px solid var(--border); border-radius: 10px; padding: 4px; background: #fff; cursor: pointer; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .day-number { font-weight: 800; font-size: 12px; color: #94a3b8; text-align: right; margin-bottom: 3px; }
         .today { border: 2px solid var(--primary); background: #f0f7ff; }
 
+        /* УЛУЧШЕННЫЕ СОБЫТИЯ */
         .event { 
-            color: white; padding: 3px 5px; border-radius: 4px; font-size: 10px; margin-top: 2px; 
-            font-weight: 700; text-align: center; overflow: hidden; white-space: nowrap; 
-            text-overflow: ellipsis; width: 100%; display: block;
+            color: white; padding: 4px 5px; border-radius: 5px; font-size: 11px; margin-top: 2px; 
+            font-weight: 700; text-align: left; overflow: hidden; white-space: normal; 
+            line-height: 1.1; word-break: break-word; width: 100%; display: block;
         }
         .event-shift { background: var(--primary); }
         .event-meeting { background: var(--secondary); }
 
-        /* Мобильная адаптация */
+        /* МОБИЛЬНАЯ ОПТИМИЗАЦИЯ - ДЕЛАЕМ КАЛЕНДАРЬ КРУПНЕЕ */
         @media (max-width: 600px) {
-            .day { min-height: 60px; }
-            .schedule-maker { grid-template-columns: 1fr 1fr; }
-            .btn-group { grid-column: span 2; display: flex; gap: 4px; }
-            .btn-group button { flex: 1; }
+            body { padding: 5px; }
+            #calendar-container { padding: 10px 5px; border-radius: 0; margin: 0 -5px 20px -5px; width: calc(100% + 10px); }
+            .day { min-height: 85px; border-radius: 6px; padding: 2px; }
+            .day-number { font-size: 10px; margin-bottom: 2px; }
+            .event { font-size: 9px; padding: 2px 3px; border-radius: 3px; }
+            .weekdays div { font-size: 9px; }
+            
+            .schedule-maker { grid-template-columns: 1fr 1fr; padding: 10px; margin-bottom: 15px; }
+            .btn-group { grid-column: span 2; display: flex; gap: 6px; }
+            .btn-group button { flex: 1; font-size: 12px; padding: 14px 5px; }
         }
 
-        /* Модалка */
         #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; backdrop-filter: blur(4px); padding: 10px; }
         .modal-content { background: white; width: 100%; max-width: 340px; margin: 15vh auto; padding: 25px; border-radius: 16px; }
         .modal-content select, .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; font-family: inherit; }
@@ -96,8 +104,8 @@
             <input type="number" id="sched-rest" value="2">
         </div>
         <div class="btn-group">
-            <button onclick="generateSchedule()">Заполнить цикл</button>
-            <button class="btn-danger" onclick="clearAll()">Очистить всё</button>
+            <button onclick="generateSchedule()">Цикл</button>
+            <button class="btn-danger" onclick="clearAll()">Очистить</button>
         </div>
     </div>
 
@@ -118,16 +126,13 @@
 <div id="modal">
     <div class="modal-content">
         <h3 style="margin: 0 0 10px 0;">Добавить запись</h3>
-        
-        <label style="font-size: 12px; font-weight: 700; color: #64748b;">ТИП ЗАПИСИ</label>
+        <label style="font-size: 11px; font-weight: 700; color: #64748b;">ТИП</label>
         <select id="event-type">
             <option value="shift">Смена (Синий)</option>
             <option value="meeting">Встреча (Зеленый)</option>
         </select>
-
-        <label style="font-size: 12px; font-weight: 700; color: #64748b;">НАЗВАНИЕ</label>
-        <input type="text" id="event-title" placeholder="Напр: Доп. смена или Врач">
-        
+        <label style="font-size: 11px; font-weight: 700; color: #64748b;">ТЕКСТ</label>
+        <input type="text" id="event-title" placeholder="Доп. смена, Врач и т.д.">
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button class="btn-danger" onclick="closeModal()" style="flex: 1;">Отмена</button>
             <button onclick="saveEvent()" style="flex: 1.5;">Сохранить</button>
@@ -155,53 +160,52 @@
         const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
         monthYear.innerText = `${monthNames[month]} ${year}`;
 
-        let shiftsCount = 0;
-        let meetingsCount = 0;
+        let shifts = 0, meetings = 0;
         const realToday = new Date().toISOString().split('T')[0];
 
         for (let i = 0; i < startDay; i++) daysContainer.appendChild(document.createElement("div"));
 
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement("div");
-            dayDiv.classList.add("day");
+            dayDiv.className = "day";
             const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             if (dateKey === realToday) dayDiv.classList.add("today");
             dayDiv.innerHTML = `<div class="day-number">${i}</div>`;
             
             if (events[dateKey]) {
-                events[dateKey].forEach((event, index) => {
-                    const eventDiv = document.createElement("div");
-                    eventDiv.classList.add("event", event.isShift ? "event-shift" : "event-meeting");
-                    eventDiv.innerText = event.title;
-                    event.isShift ? shiftsCount++ : meetingsCount++;
-                    
-                    eventDiv.onclick = (e) => {
+                events[dateKey].forEach((ev, idx) => {
+                    const evDiv = document.createElement("div");
+                    evDiv.className = `event ${ev.isShift ? 'event-shift' : 'event-meeting'}`;
+                    evDiv.innerText = ev.title;
+                    ev.isShift ? shifts++ : meetings++;
+                    evDiv.onclick = (e) => {
                         e.stopPropagation();
-                        if(confirm(`Удалить "${event.title}"?`)) {
-                            events[dateKey].splice(index, 1);
+                        if(confirm(`Удалить "${ev.title}"?`)) {
+                            events[dateKey].splice(idx, 1);
                             if(!events[dateKey].length) delete events[dateKey];
                             save(); renderCalendar();
                         }
                     };
-                    dayDiv.appendChild(eventDiv);
+                    dayDiv.appendChild(evDiv);
                 });
             }
             dayDiv.onclick = () => openModal(dateKey);
             daysContainer.appendChild(dayDiv);
         }
-        statsPanel.innerHTML = `<span>📅 Смен: ${shiftsCount}</span> <span>📝 Встреч: ${meetingsCount}</span>`;
+        statsPanel.innerHTML = `<span>📅 Смен: ${shifts}</span> <span>📝 Встреч: ${meetings}</span>`;
     }
 
     function save() { localStorage.setItem("myWebCalendar", JSON.stringify(events)); }
     function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
-    
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
+    function openModal(date) { selectedDateStr = date; document.getElementById("event-title").value = ""; document.getElementById("modal").style.display = "block"; }
+
     function generateSchedule() {
         const start = document.getElementById("sched-start").value;
         const work = parseInt(document.getElementById("sched-work").value);
         const rest = parseInt(document.getElementById("sched-rest").value);
         const title = document.getElementById("sched-title").value;
         if (!start || isNaN(work)) return alert("Укажите начало цикла");
-
         let d = new Date(start);
         for (let i = 0; i < 365; i++) {
             if (i % (work + rest) < work) {
@@ -214,28 +218,16 @@
         save(); renderCalendar();
     }
 
-    function clearAll() { if(confirm("Очистить календарь?")) { events = {}; save(); renderCalendar(); } }
-    function openModal(date) { 
-        selectedDateStr = date; 
-        document.getElementById("event-title").value = "";
-        document.getElementById("modal").style.display = "block"; 
-    }
-    function closeModal() { document.getElementById("modal").style.display = "none"; }
-    
     function saveEvent() {
         const title = document.getElementById("event-title").value;
         const type = document.getElementById("event-type").value;
         if (!title) return;
-        
         if (!events[selectedDateStr]) events[selectedDateStr] = [];
-        events[selectedDateStr].push({ 
-            title: title, 
-            isShift: (type === 'shift') 
-        });
-        
+        events[selectedDateStr].push({ title, isShift: (type === 'shift') });
         save(); closeModal(); renderCalendar();
     }
 
+    function clearAll() { if(confirm("Очистить всё?")) { events = {}; save(); renderCalendar(); } }
     renderCalendar();
 </script>
 </body>
