@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://grafik-smen.online/sitemap.xml
