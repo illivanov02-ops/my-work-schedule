@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>График смен онлайн — Рассчитать календарь работы 2/2, 3/3, 5/2</title>
+    <title>График Смен Онлайн — Календарь работы 2/2, 3/3, 5/2</title>
+    <meta name="description" content="Бесплатный сервис для расчета графика смен. Удобный календарь для работы 2 через 2, 3 через 3. Планируйте смены и встречи онлайн.">
+    <meta name="keywords" content="график смен, календарь работы, рассчитать график 2/2, график 3/3, онлайн календарь смен">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -44,13 +48,10 @@
         .weekdays div { font-weight: 700; text-align: center; color: #94a3b8; font-size: 11px; text-transform: uppercase; }
 
         .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; width: 100%; }
-        
-        /* УВЕЛИЧЕННАЯ ЯЧЕЙКА */
         .day { min-height: 95px; border: 1px solid var(--border); border-radius: 10px; padding: 4px; background: #fff; cursor: pointer; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .day-number { font-weight: 800; font-size: 12px; color: #94a3b8; text-align: right; margin-bottom: 3px; }
         .today { border: 2px solid var(--primary); background: #f0f7ff; }
 
-        /* УЛУЧШЕННЫЕ СОБЫТИЯ */
         .event { 
             color: white; padding: 4px 5px; border-radius: 5px; font-size: 11px; margin-top: 2px; 
             font-weight: 700; text-align: left; overflow: hidden; white-space: normal; 
@@ -59,23 +60,19 @@
         .event-shift { background: var(--primary); }
         .event-meeting { background: var(--secondary); }
 
-        /* МОБИЛЬНАЯ ОПТИМИЗАЦИЯ - ДЕЛАЕМ КАЛЕНДАРЬ КРУПНЕЕ */
         @media (max-width: 600px) {
             body { padding: 5px; }
             #calendar-container { padding: 10px 5px; border-radius: 0; margin: 0 -5px 20px -5px; width: calc(100% + 10px); }
             .day { min-height: 85px; border-radius: 6px; padding: 2px; }
-            .day-number { font-size: 10px; margin-bottom: 2px; }
-            .event { font-size: 9px; padding: 2px 3px; border-radius: 3px; }
-            .weekdays div { font-size: 9px; }
-            
-            .schedule-maker { grid-template-columns: 1fr 1fr; padding: 10px; margin-bottom: 15px; }
+            .event { font-size: 9px; padding: 2px 3px; }
+            .schedule-maker { grid-template-columns: 1fr 1fr; }
             .btn-group { grid-column: span 2; display: flex; gap: 6px; }
-            .btn-group button { flex: 1; font-size: 12px; padding: 14px 5px; }
+            .btn-group button { flex: 1; }
         }
 
         #modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; backdrop-filter: blur(4px); padding: 10px; }
         .modal-content { background: white; width: 100%; max-width: 340px; margin: 15vh auto; padding: 25px; border-radius: 16px; }
-        .modal-content select, .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; font-family: inherit; }
+        .modal-content select, .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -87,25 +84,13 @@
 
 <div id="calendar-container">
     <div class="schedule-maker">
-        <div class="input-group">
-            <label>Начало цикла</label>
-            <input type="date" id="sched-start">
-        </div>
-        <div class="input-group">
-            <label>Тип</label>
-            <input type="text" id="sched-title" value="Смена">
-        </div>
-        <div class="input-group">
-            <label>Работа</label>
-            <input type="number" id="sched-work" value="2">
-        </div>
-        <div class="input-group">
-            <label>Отдых</label>
-            <input type="number" id="sched-rest" value="2">
-        </div>
-        <div class="btn-group">
-            <button onclick="generateSchedule()">Цикл</button>
-            <button class="btn-danger" onclick="clearAll()">Очистить</button>
+        <div class="input-group"><label>Начало цикла</label><input type="date" id="sched-start"></div>
+        <div class="input-group"><label>Тип</label><input type="text" id="sched-title" value="Смена"></div>
+        <div class="input-group"><label>Работа</label><input type="number" id="sched-work" value="2"></div>
+        <div class="input-group"><label>Отдых</label><input type="number" id="sched-rest" value="2"></div>
+        <div class="btn-group" style="display: flex; gap: 8px;">
+            <button onclick="generateSchedule()" style="flex: 1.5;">Заполнить</button>
+            <button class="btn-danger" onclick="clearAll()" style="flex: 1;">Очистить</button>
         </div>
     </div>
 
@@ -126,13 +111,11 @@
 <div id="modal">
     <div class="modal-content">
         <h3 style="margin: 0 0 10px 0;">Добавить запись</h3>
-        <label style="font-size: 11px; font-weight: 700; color: #64748b;">ТИП</label>
         <select id="event-type">
             <option value="shift">Смена (Синий)</option>
             <option value="meeting">Встреча (Зеленый)</option>
         </select>
-        <label style="font-size: 11px; font-weight: 700; color: #64748b;">ТЕКСТ</label>
-        <input type="text" id="event-title" placeholder="Доп. смена, Врач и т.д.">
+        <input type="text" id="event-title" placeholder="Название записи">
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button class="btn-danger" onclick="closeModal()" style="flex: 1;">Отмена</button>
             <button onclick="saveEvent()" style="flex: 1.5;">Сохранить</button>
@@ -227,7 +210,7 @@
         save(); closeModal(); renderCalendar();
     }
 
-    function clearAll() { if(confirm("Очистить всё?")) { events = {}; save(); renderCalendar(); } }
+    function clearAll() { if(confirm("Очистить все данные из календаря?")) { events = {}; save(); renderCalendar(); } }
     renderCalendar();
 </script>
 </body>
